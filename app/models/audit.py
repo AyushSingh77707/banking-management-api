@@ -19,5 +19,5 @@ class AuditLog(Base):
     changed_at:Mapped[datetime]=mapped_column(TIMESTAMP(timezone=True),nullable=False,server_default=func.now())
 
     __table_args__=(
-        CheckConstraint("operation IN ('INSERT','UPDATE','DELETE')",name="audit_log_operation_check")
+        CheckConstraint("operation IN ('INSERT','UPDATE','DELETE')",name="audit_log_operation_check"),
     )

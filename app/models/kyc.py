@@ -19,7 +19,7 @@ class Kyc(Base):
     verification_method:Mapped[str]=mapped_column(String,nullable=False)
 
     __table_args__=(
-        CheckConstraint("kyc_status IN ('SUCCESS','REJECTED','EXPIRED','PENDING')",name="kyc_status_check"),
+        CheckConstraint("kyc_status IN ('VERIFIED','REJECTED','EXPIRED','PENDING')",name="kyc_status_check"),
     )
 
     customer:Mapped["Customer"]=relationship(back_populates="kyc")
