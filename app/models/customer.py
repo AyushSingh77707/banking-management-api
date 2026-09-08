@@ -24,7 +24,7 @@ class Customer(Base):
     mobile:Mapped[str]=mapped_column(String,nullable=False,unique=True)
     email:Mapped[str | None]=mapped_column(String,unique=True)
     occupation:Mapped[str|None]=mapped_column(String)
-    aadhar_number:Mapped[str|None]=mapped_column(String(12),unique=True)
+    # aadhar_number:Mapped[str|None]=mapped_column(String(12),unique=True)
     status:Mapped[str]=mapped_column(String,nullable=False,default='ACTIVE')
     created_at:Mapped[datetime]=mapped_column(TIMESTAMP(timezone=True),nullable=False,server_default=func.now())
 
@@ -35,6 +35,7 @@ class Customer(Base):
     cards:Mapped[list["Card"]]=relationship(back_populates="customer")
     tickets:Mapped[list["SupportTicket"]]=relationship(back_populates="customer")
     addresses:Mapped[list["CustomerAddress"]]=relationship(back_populates="customer")
+    beneficiaries:Mapped[list["Beneficiary"]]=relationship(back_populates="customer")
 
     __table_args__=(
         CheckConstraint("status IN ('ACTIVE','FROZEN','BLOCKED','INACTIVE')",name="customer_status_check"),

@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from .customer import Customer
     from .account_type import AccountType
     from .card import Card
+    from .branch import Branch
     
 class Account(Base):
     __tablename__="account"
@@ -31,3 +32,4 @@ class Account(Base):
 
     account_type:Mapped["AccountType"]=relationship(back_populates="accounts")
     cards:Mapped["Card"]=relationship(back_populates="account")
+    branch:Mapped["Branch"]=relationship(back_populates="accounts")

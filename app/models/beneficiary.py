@@ -24,4 +24,4 @@ class Beneficiary(Base):
         CheckConstraint("status IN ('ACTIVE','BLOCKED')",name="beneficiary_status_check"),
     )
 
-    customer:Mapped["Customer"]=relationship(back_populates="beneficaries")
+    customer:Mapped["Customer"]=relationship(back_populates="beneficiaries")

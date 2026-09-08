@@ -20,7 +20,7 @@ class Employee(Base):
     joining_date:Mapped[date]=mapped_column(Date,server_default=func.now(),nullable=True)
 
     branch:Mapped["Branch"]=relationship(back_populates="employees")
-    issued_loan:Mapped[list["Loan"]]=relationship(back_populates="issued_by")
+    issued_loans:Mapped[list["Loan"]]=relationship(back_populates="issued_by")
 
     __table_args__=(
             CheckConstraint("employee_status IN ('ACTIVE','ONLEAVE','RESIGNED')",name="employee_status_check"),
