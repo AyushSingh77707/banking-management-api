@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.crud.customer import create_customer,get_customer,get_all_customers,update_customer,delete_customer
 from app.schemas.customer import CustomerCreate,CustomerResponse,CustomerUpdate
-from app.schemas.pagination import PaginationPara
+from app.schemas.filter import CustomerQueryParameter
 
 
 router=APIRouter(prefix="/customers",tags=["Customer"])
@@ -14,8 +14,8 @@ def customer_create_endpoint(data:CustomerCreate,db:Session=Depends(get_db)):
     return create_customer(customer=data,db=db)
 
 @router.get("/",response_model=list[CustomerResponse])
-def get_customers(db:Session=Depends(get_db),pagination:PaginationPara=Depends()):
-    return get_all_customers(db,limit=pagination.limit,offset=pagination.offset)
+def get_customers(db:Session=Depends(get_db),parameters:CustomerQueryParameter=Depends()):
+    return get_all_customers(db,parameters)
 
 @router.get("/{id}",response_model=CustomerResponse)
 def get_customer_by_id(id:int,db:Session=Depends(get_db)):

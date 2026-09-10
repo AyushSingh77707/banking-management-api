@@ -2,9 +2,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.models.customer import Customer
 from app.schemas.customer import CustomerCreate,CustomerUpdate
+from app.schemas.filter import CustomerQueryParameter
 from app.core.database import get_db
 from fastapi import HTTPException,status
-from sqlalchemy import select
+from sqlalchemy import select,or_,asc,desc
 
 def create_customer(customer:CustomerCreate,db:Session):
     db_cust=Customer(**customer.model_dump())
@@ -25,9 +26,31 @@ def get_customer(cust_id:int , db:Session):
         select(Customer).where(Customer.customer_id==cust_id)
     )
 
-def get_all_customers(db:Session,limit:int=10,offset:int=0):
-    query=select(Customer).limit(limit).offset(offset)
+def get_all_customers(db:Session,parameters:CustomerQueryParameter):
+
+    query=select(Customer)
+
+    if parameters.search:
+        query=query.where(
+            or_(Customer.full_name.ilike(f"%{parameters.search}%"),
+                Customer.mobile.ilike(f"%{parameters.search}%"))
+        )
+
+    if parameters.status:
+        query=query.where(Customer.status==parameters.status)
+
+    sort_column=Customer.full_name if parameters.sort_by=="full_name" else Customer.created_at
+
+    query=query.order_by(
+        desc(sort_column) if parameters.order=="desc" else asc(sort_column)
+    )
+
+    query=query.limit(parameters.limit).offset(parameters.offset)
     return db.scalars(query).all()
+
+
+
+
 
 def update_customer(cust_id:int,data:CustomerUpdate,db:Session):
     c=db.scalar(select(Customer).where(Customer.customer_id==cust_id))
