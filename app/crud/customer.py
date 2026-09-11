@@ -7,6 +7,7 @@ from app.core.database import get_db
 from fastapi import HTTPException,status
 from sqlalchemy import select,or_,asc,desc
 from app.core.exception import CustomerNotFoundException
+from fastapi.responses import JSONResponse
 
 def create_customer(customer:CustomerCreate,db:Session):
     db_cust=Customer(**customer.model_dump())
