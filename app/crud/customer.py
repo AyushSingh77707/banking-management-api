@@ -6,19 +6,16 @@ from app.schemas.filter import CustomerQueryParameter
 from app.core.database import get_db
 from fastapi import HTTPException,status
 from sqlalchemy import select,or_,asc,desc
+from app.core.exception import CustomerNotFoundException
 
 def create_customer(customer:CustomerCreate,db:Session):
     db_cust=Customer(**customer.model_dump())
 
-    try:
-        db.add(db_cust)
-        db.commit()
-        db.refresh(db_cust)
-        return db_cust
+    db.add(db_cust)
+    db.commit()
+    db.refresh(db_cust)
+    return db_cust
 
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=409,detail="Customer with same mobile or email exists!")
 
 
 def get_customer(cust_id:int , db:Session):
@@ -55,7 +52,7 @@ def get_all_customers(db:Session,parameters:CustomerQueryParameter):
 def update_customer(cust_id:int,data:CustomerUpdate,db:Session):
     c=db.scalar(select(Customer).where(Customer.customer_id==cust_id))
     if not c:
-        raise HTTPException(status_code=404,detail="Customer with id {cust_id} not found!")
+        raise CustomerNotFoundException(cust_id)
 
     update_data=data.model_dump(exclude_unset=True)
 
@@ -70,7 +67,7 @@ def delete_customer(cust_id:int,db:Session):
     c=db.scalar(select(Customer).where(Customer.customer_id==cust_id))
 
     if not c:
-        raise HTTPException(status_code=404,detail="Customer not found")
+        raise CustomerNotFoundException(cust_id)
 
     if c.accounts:
         raise HTTPException(status_code=400,detail="customer has active account,cannot delete")
